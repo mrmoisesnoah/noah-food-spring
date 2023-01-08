@@ -4,6 +4,7 @@ Microsserviços responsáveis pela realização de pedido e confirmação de pag
 
 * Spring Cloud Service Eureka;
 * Spring Cloud Gateway;
+* Spring Cloud Openfeign;
 * Spring Web MVC;
 * Spring Boot;
 * Spring Data JPA;

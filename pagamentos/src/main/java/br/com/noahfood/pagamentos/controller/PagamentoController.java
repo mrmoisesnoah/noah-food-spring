@@ -4,6 +4,8 @@ import br.com.noahfood.pagamentos.dto.PagamentoDTO;
 import br.com.noahfood.pagamentos.service.PagamentoService;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.RequiredArgsConstructor;
+import org.springframework.amqp.core.Message;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -21,6 +23,7 @@ import java.net.URI;
 public class PagamentoController {
 
     private final PagamentoService pagamentoService;
+    private final RabbitTemplate rabbitTemplate;
 
     @GetMapping
     public Page<PagamentoDTO> buscarPagamentos(@PageableDefault(size = 10)Pageable page){
@@ -38,6 +41,8 @@ public class PagamentoController {
                                                        UriComponentsBuilder builder) {
         PagamentoDTO pagamento = pagamentoService.createPagamento(pagamentoDTO);
         URI endereco = builder.path("/pagamento/{id}").buildAndExpand(pagamento.getId()).toUri();
+
+        rabbitTemplate.convertAndSend("payment.ex","", pagamento);
         return ResponseEntity.created(endereco).body(pagamento);
 
     }
